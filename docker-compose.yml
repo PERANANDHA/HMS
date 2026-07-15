@@ -1,0 +1,68 @@
+version: '3.8'
+
+services:
+  mysql:
+    image: mysql:8
+    container_name: ehms-mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: ehms_db
+    ports:
+      - "3307:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    restart: unless-stopped
+    networks:
+      - ehms-network
+
+  redis:
+    image: redis:7-alpine
+    container_name: ehms-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    restart: unless-stopped
+    networks:
+      - ehms-network
+
+  backend:
+    build: 
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: ehms-backend
+    ports:
+      - "8080:8080"
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:mysql://mysql:3306/ehms_db?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
+      - SPRING_DATASOURCE_USERNAME=root
+      - SPRING_DATASOURCE_PASSWORD=root
+      - SPRING_DATA_REDIS_HOST=redis
+      - SPRING_DATA_REDIS_PORT=6379
+      - JWT_SECRET=VerySecretKeyThatIsAtLeast64BytesLongForHS512AlgorithmSoItMustBeLonger1234567890
+      - JWT_EXPIRATION=86400000
+    depends_on:
+      - mysql
+      - redis
+    networks:
+      - ehms-network
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: ehms-frontend
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+    networks:
+      - ehms-network
+
+networks:
+  ehms-network:
+    driver: bridge
+
+volumes:
+  mysql_data:
+  redis_data:
