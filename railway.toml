@@ -1,0 +1,6 @@
+[build]
+builder = "NIXPACKS"
+watchPaths = ["backend/**"]
+
+[deploy]
+startCommand = "java -jar backend/target/*.jar"
