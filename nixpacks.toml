@@ -1,8 +1,0 @@
-[providers]
-java = {}
-
-[build]
-cmd = "cd backend && ./mvnw clean package -DskipTests"
-
-[start]
-cmd = "java -jar backend/target/*.jar"

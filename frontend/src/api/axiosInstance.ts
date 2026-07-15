@@ -1,8 +1,12 @@
 import axios from 'axios';
+import mockAdapter from './mockAdapter';
 
 const axiosInstance = axios.create({
-  baseURL: import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080/api',
+  baseURL: import.meta.env.VITE_API_BASE_URL || '/api',
 });
+
+// Use mock adapter since the backend has been completely removed
+axiosInstance.defaults.adapter = mockAdapter;
 
 // Request interceptor to add the auth token header to every request
 axiosInstance.interceptors.request.use(
