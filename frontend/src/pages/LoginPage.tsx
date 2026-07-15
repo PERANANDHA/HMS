@@ -120,9 +120,16 @@ export default function LoginPage() {
 
       login({ id, name, email: respEmail, roles }, token);
       navigate('/');
-    } catch (err: unknown) {
-      const axiosErr = err as { response?: { data?: { message?: string } } };
-      setError(axiosErr.response?.data?.message || 'Invalid email or password. Please try again.');
+    } catch (err: any) {
+      if (!err.response) {
+        setError(`Network Error: Could not connect to backend at ${axiosInstance.defaults.baseURL}. If hosted, check VITE_API_BASE_URL.`);
+      } else if (err.response.status >= 500) {
+        setError(`Server Error (${err.response.status}): The backend is offline or crashed. (Check database connection)`);
+      } else if (err.response.status === 404) {
+        setError(`Not Found (404): The API endpoint does not exist at ${axiosInstance.defaults.baseURL}.`);
+      } else {
+        setError(err.response.data?.message || 'Invalid email or password. Please try again.');
+      }
     } finally {
       setLoading(false);
     }
