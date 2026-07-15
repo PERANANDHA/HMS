@@ -4,8 +4,7 @@ import { useAuth } from '../context/AuthContext';
 import axiosInstance from '../api/axiosInstance';
 import {
   ShieldCheck, Stethoscope, ClipboardList, Heart,
-  Pill, FlaskConical, User, ArrowLeft, Eye, EyeOff,
-  Activity
+  Pill, FlaskConical, User, ArrowLeft, Eye, EyeOff
 } from 'lucide-react';
 import type { LucideProps } from 'lucide-react';
 
@@ -151,12 +150,11 @@ export default function LoginPage() {
         {/* Logo */}
         <div className="text-center mb-8">
           <div className="inline-flex items-center gap-3">
-            <div
-              className="w-12 h-12 rounded-xl flex items-center justify-center"
-              style={{ background: 'linear-gradient(135deg, #0ea5e9, #6366f1)' }}
-            >
-              <Activity size={24} className="text-white" />
-            </div>
+            <img 
+              src="/wireframe.png" 
+              alt="HMS Logo" 
+              className="w-12 h-12 rounded-xl object-cover border border-sky-500/30 shadow-lg shadow-sky-500/20" 
+            />
             <div className="text-left">
               <h1 className="text-2xl font-bold text-white leading-none">MediCare HMS</h1>
               <p className="text-xs text-slate-400 mt-0.5 font-medium">Enterprise Hospital Management</p>

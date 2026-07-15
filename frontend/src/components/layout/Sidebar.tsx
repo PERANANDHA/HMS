@@ -1,7 +1,7 @@
 import {
   LayoutDashboard, Users, Stethoscope, Calendar, Pill,
   FlaskConical, Settings, CreditCard,
-  Package, BarChart3, UserCog, Activity, ClipboardList,
+  Package, BarChart3, UserCog, ClipboardList,
 } from 'lucide-react';
 import { NavLink } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
@@ -92,12 +92,11 @@ export default function Sidebar() {
         className="flex items-center gap-3 px-5 py-4"
         style={{ borderBottom: '1px solid rgba(56,189,248,0.08)' }}
       >
-        <div
-          className="w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0"
-          style={{ background: 'linear-gradient(135deg, #0ea5e9, #6366f1)' }}
-        >
-          <Activity size={18} className="text-white" />
-        </div>
+        <img 
+          src="/wireframe.png" 
+          alt="HMS Logo" 
+          className="w-9 h-9 rounded-lg object-cover border border-sky-500/20" 
+        />
         <div>
           <span className="text-base font-bold text-white leading-none block">MediCare</span>
           <span className="text-xs text-slate-500 font-medium">HMS v2.0</span>
