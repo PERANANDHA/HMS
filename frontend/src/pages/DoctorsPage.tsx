@@ -23,6 +23,7 @@ export default function DoctorsPage() {
   const [saving, setSaving] = useState(false);
   const [formError, setFormError] = useState('');
   const [addForm, setAddForm] = useState({ firstName: '', lastName: '', email: '', phone: '', specialization: 'Cardiologist', departmentName: 'Cardiology' });
+  const [scheduleDoc, setScheduleDoc] = useState<Doctor | null>(null);
 
   const fetchDoctors = () => {
     setLoading(true);
@@ -162,7 +163,7 @@ export default function DoctorsPage() {
                 </div>
 
                 <div className="mt-4 pt-3 flex gap-2" style={{ borderTop: '1px solid rgba(56,189,248,0.08)' }}>
-                  <button className="btn-secondary flex-1 text-xs py-1.5 justify-center">View Schedule</button>
+                  <button onClick={() => setScheduleDoc(doc)} className="btn-secondary flex-1 text-xs py-1.5 justify-center">View Schedule</button>
                 </div>
               </div>
             );
@@ -224,6 +225,39 @@ export default function DoctorsPage() {
                 </button>
               </div>
             </form>
+          </div>
+        </div>
+      )}
+
+      {/* View Schedule Modal */}
+      {scheduleDoc && (
+        <div className="modal-overlay" onClick={e => { if (e.target === e.currentTarget) setScheduleDoc(null); }}>
+          <div className="modal-box" style={{ maxWidth: 400 }}>
+            <div className="flex items-center justify-between p-5" style={{ borderBottom: '1px solid rgba(56,189,248,0.1)' }}>
+              <h2 className="text-lg font-bold text-white">Schedule - Dr. {scheduleDoc.firstName} {scheduleDoc.lastName}</h2>
+              <button onClick={() => setScheduleDoc(null)} className="text-slate-500 hover:text-white transition-colors"><X size={20} /></button>
+            </div>
+            <div className="p-5 space-y-3">
+              <div className="grid grid-cols-1 gap-2">
+                {['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'].map(day => (
+                  <div key={day} className="flex justify-between items-center p-3 rounded-lg" style={{ background: 'rgba(56,189,248,0.04)', border: '1px solid rgba(56,189,248,0.08)' }}>
+                    <span className="text-slate-300 font-medium text-sm">{day}</span>
+                    <span className="text-slate-400 text-xs">09:00 AM - 05:00 PM</span>
+                  </div>
+                ))}
+                <div className="flex justify-between items-center p-3 rounded-lg" style={{ background: 'rgba(56,189,248,0.04)', border: '1px solid rgba(56,189,248,0.08)' }}>
+                  <span className="text-slate-300 font-medium text-sm">Saturday</span>
+                  <span className="text-slate-400 text-xs">09:00 AM - 01:00 PM</span>
+                </div>
+                <div className="flex justify-between items-center p-3 rounded-lg opacity-50" style={{ background: 'rgba(56,189,248,0.02)', border: '1px solid rgba(56,189,248,0.04)' }}>
+                  <span className="text-slate-300 font-medium text-sm">Sunday</span>
+                  <span className="text-slate-400 text-xs">Day Off</span>
+                </div>
+              </div>
+              <div className="pt-2">
+                <button onClick={() => setScheduleDoc(null)} className="btn-secondary w-full justify-center">Close</button>
+              </div>
+            </div>
           </div>
         </div>
       )}
