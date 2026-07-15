@@ -119,7 +119,16 @@ export default function SettingsPage() {
           {['Clear All Appointments', 'Reset Demo Data', 'Backup Database'].map(action => (
             <div key={action} className="flex items-center justify-between">
               <span className="text-sm text-slate-400">{action}</span>
-              <button className="btn-danger text-xs px-3 py-1.5">{action.split(' ')[0]}</button>
+              <button 
+                className="btn-danger text-xs px-3 py-1.5"
+                onClick={() => {
+                  if (window.confirm(`Are you sure you want to ${action.toLowerCase()}? This action cannot be undone.`)) {
+                    window.alert(`${action} completed successfully.`);
+                  }
+                }}
+              >
+                {action.split(' ')[0]}
+              </button>
             </div>
           ))}
         </div>

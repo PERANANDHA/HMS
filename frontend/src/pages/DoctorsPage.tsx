@@ -20,12 +20,20 @@ export default function DoctorsPage() {
   const [search, setSearch] = useState('');
   const [deptFilter, setDeptFilter] = useState('All');
   const [showModal, setShowModal] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [formError, setFormError] = useState('');
+  const [addForm, setAddForm] = useState({ firstName: '', lastName: '', email: '', phone: '', specialization: 'Cardiologist', departmentName: 'Cardiology' });
 
-  useEffect(() => {
+  const fetchDoctors = () => {
+    setLoading(true);
     axiosInstance.get('/doctors')
       .then(r => { setDoctors(r.data); setError(null); })
       .catch(() => setError('Failed to load doctors.'))
       .finally(() => setLoading(false));
+  };
+
+  useEffect(() => {
+    fetchDoctors();
   }, []);
 
   const depts = ['All', ...Array.from(new Set(doctors.map(d => d.department?.name).filter(Boolean) as string[]))];
@@ -39,6 +47,22 @@ export default function DoctorsPage() {
   const specColors: Record<string, string> = {
     Cardiologist: '#f87171', Neurologist: '#a78bfa', Surgeon: '#60a5fa',
     Pediatrician: '#34d399', default: '#0ea5e9',
+  };
+
+  const handleAddDoctor = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setSaving(true);
+    setFormError('');
+    try {
+      await axiosInstance.post('/doctors', addForm);
+      setShowModal(false);
+      setAddForm({ firstName: '', lastName: '', email: '', phone: '', specialization: 'Cardiologist', departmentName: 'Cardiology' });
+      fetchDoctors();
+    } catch (err: any) {
+      setFormError(err.response?.data?.message || 'Failed to add doctor.');
+    } finally {
+      setSaving(false);
+    }
   };
 
   return (
@@ -154,10 +178,52 @@ export default function DoctorsPage() {
               <h2 className="text-lg font-bold text-white">Add New Doctor</h2>
               <button onClick={() => setShowModal(false)} className="text-slate-500 hover:text-white transition-colors"><X size={20} /></button>
             </div>
-            <div className="p-5">
-              <p className="text-sm text-slate-400">Doctor registration coming soon. Contact admin to add doctors.</p>
-              <button onClick={() => setShowModal(false)} className="btn-secondary mt-4">Close</button>
-            </div>
+            <form onSubmit={handleAddDoctor} className="p-5 space-y-4">
+              {formError && <div className="px-4 py-3 rounded-lg text-sm text-red-400 bg-red-500/10 border border-red-500/20">{formError}</div>}
+              
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="label-dark">First Name *</label>
+                  <input required className="input-dark" value={addForm.firstName} onChange={e => setAddForm({...addForm, firstName: e.target.value})} placeholder="Ramesh" />
+                </div>
+                <div>
+                  <label className="label-dark">Last Name *</label>
+                  <input required className="input-dark" value={addForm.lastName} onChange={e => setAddForm({...addForm, lastName: e.target.value})} placeholder="Kumar" />
+                </div>
+              </div>
+
+              <div>
+                <label className="label-dark">Email *</label>
+                <input required type="email" className="input-dark" value={addForm.email} onChange={e => setAddForm({...addForm, email: e.target.value})} placeholder="doctor@ehms.com" />
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="label-dark">Phone *</label>
+                  <input required className="input-dark" value={addForm.phone} onChange={e => setAddForm({...addForm, phone: e.target.value})} placeholder="+91 94440-12345" />
+                </div>
+                <div>
+                  <label className="label-dark">Specialization</label>
+                  <select className="input-dark" value={addForm.specialization} onChange={e => setAddForm({...addForm, specialization: e.target.value})}>
+                    {['Cardiologist', 'Neurologist', 'Surgeon', 'Pediatrician', 'Orthopedist', 'Dermatologist', 'General Physician'].map(s => (
+                      <option key={s} value={s}>{s}</option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+
+              <div>
+                <label className="label-dark">Department Name</label>
+                <input className="input-dark" value={addForm.departmentName} onChange={e => setAddForm({...addForm, departmentName: e.target.value})} placeholder="e.g. Cardiology" />
+              </div>
+
+              <div className="flex justify-end gap-3 pt-2">
+                <button type="button" onClick={() => setShowModal(false)} className="btn-secondary">Cancel</button>
+                <button type="submit" disabled={saving} className="btn-primary" style={{ opacity: saving ? 0.7 : 1 }}>
+                  {saving ? <><span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" /> Adding...</> : 'Add Doctor'}
+                </button>
+              </div>
+            </form>
           </div>
         </div>
       )}
